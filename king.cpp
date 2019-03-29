@@ -1,4 +1,3 @@
-
 #include "mapio.h"
 #include <iostream>
 #include <cstdio>
@@ -10,64 +9,71 @@
 
 using namespace std;
 
-//vector<vector <int> > distmap;
-unordered_map<pair<unsigned, unsigned>, int, hash_pair> distmap;
-
-int min_moves(ChessMap &map, const pair<unsigned, unsigned>& start_pos, const pair<unsigned, unsigned>& target, const unsigned& n)
+struct dist_map
 {
+    pair<unsigned, unsigned> pos;
+    int distance;
+    dist_map() : pos({0, 0}), distance(0) {}
+    dist_map(pair<unsigned, unsigned> pos, int distance) : pos(pos), distance(distance) {}
+};
 
-    bool visited[n + 1][n + 1]; //since table is nxn we need (n+1)x(n+1)
+//vector<vector <int> > dist_map;
+//unordered_map<pair<unsigned, unsigned>, int, hash_pair> distmap;
 
-    visited[start_pos.first][start_pos.second] = true; // Start point is already visited
+int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pair<unsigned, unsigned> &target, const unsigned &n)
+{
+    // possible movements for king
+    int x_axis[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+    int y_axis[8] = {-1, 1, 0, -1, 1, -1, 1, 0};
 
-    for (int i = 0; i < n + 1; i++)
+    bool visited[n][n]; //since table is nxn, we need nxn array to keep track of visited places
+
+    for (int i = 0; i < n; i++)
     {
-        for (int j = 0; j < n + 1; j++)
+        for (int j = 0; j < n; j++)
         {
-            if (i != start_pos.first && j != start_pos.second) // if it is NOT the start point
-            {
-                visited[i][j] = false;
-            }
+            visited[i][j] = false; // Make all "not visited"
         }
     }
 
-    //queue<distmap> bfsqueue;
-    queue<pair<unsigned,unsigned> > bfsqueue;
-    pair<unsigned, unsigned> temp;
+    visited[start_pos.first][start_pos.second] = true; // Starting position is already visited
 
-    bfsqueue.push(start_pos);
+    queue<dist_map> bfs_queue;              // Creating the queue for BFS algo.
+    bfs_queue.push(dist_map(start_pos, 0)); // Pushing the starting position
 
-    while (!bfsqueue.empty())
+    while (!bfs_queue.empty()) // while queue is not empty
     {
-        temp = bfsqueue.front();
-        bfsqueue.pop();
+        dist_map temp = bfs_queue.front(); // peek top and copy its values
 
-        cout<<"Poped: "<< temp.first <<", "<< temp.second <<endl;
-
-        if (temp.first == target.first && temp.second == target.second)
+        if (temp.pos == target) // if we reached the target position
         {
-            cout << "found at " << target.first <<", "<< target.second << endl;
-            return 1;
+
+            bfs_queue.pop(); // delete the top
+
+            return temp.distance; // return the number of minimum steps
         }
 
-        pair<unsigned, unsigned> pos;
+        bfs_queue.pop(); // we can delete the top since we already copied its information to "temp"
 
-
-        for(int i=0; i<=n-1; i++)
+        for (int i = 0; i < 8; i++) // The number 8 is the size of cordinates of arrays, namely "x_axis" and "y_axis"
         {
-            for(int j=0; j<=n-1; j++)
+            int x = temp.pos.first + x_axis[i];  // update x axis
+            int y = temp.pos.second + y_axis[i]; // update y axis
+
+            if (x >= 0 && x < n && y >= 0 && y < n) // if x and y are valid intigers
             {
-                if(!visited[i][j] && map[i][j] != '#')
+                if (!visited[x][y] && map[x][y] != '#') // if (x,y) not visited and its not on obstacle on the "map"
                 {
-                    //pos = ({i,j)};
-                    bfsqueue.push(pair<unsigned,unsigned>({i,j}));
-                    visited[i-1][j-1] = true;
+                    //cout<<"ADDING PART x: "<< x<<" y: "<< y <<endl;
+                    //arr[x][y] = temp.distance;
+                    pair<unsigned, unsigned> new_pos(x, y);
+                    visited[x][y] = true;                                 // mark the (x,y) as visited
+                    bfs_queue.push(dist_map(new_pos, temp.distance + 1)); // push the new (x,y) position and increase distance by 1
                 }
             }
         }
     }
-    cout<<"Not found?"<<endl;
-    return 0;
+    return -1; // return -1 if impossible
 }
 
 int main()
@@ -96,7 +102,6 @@ int main()
             if (map[i][j] == 'k')
             {
                 start = pair<unsigned, unsigned>({i, j});
-                //distmap({i,j},0) = pair<unsigned, unsigned>({i, j});
             }
 
             if (map[i][j] == 'o')
@@ -104,69 +109,22 @@ int main()
                 target = pair<unsigned, unsigned>({i, j});
             }
         }
-         if (DEBUG) cout << i << '[' << map[i] << ']' << endl;
+        if (DEBUG)
+            cout << i << '[' << map[i] << ']' << endl;
     }
     if (DEBUG)
         cout << "The starting position is: " << start.first << ", " << start.second << endl;
 
-    queue<pair<unsigned, unsigned> > bfsqueue;
-    pair<unsigned, unsigned> temp;
+    int min_moves_output = min_moves(map, start, target, n);
 
-    bool visited[n + 1][n + 1]; //since table is nxn we need (n+1)x(n+1)
-
-    visited[start.first][start.second] = true; // Start point is already visited
-
-    for (int i = 0; i < n + 1; i++)
+    if (min_moves_output == -1)
     {
-        for (int j = 0; j < n + 1; j++)
-        {
-            if (i != start.first && j != start.second) // if it is NOT the start point
-            {
-                visited[i][j] = false;
-            }
-        }
+        cout << "Impossible" << endl;
     }
-
-    min_moves(map, start, target, n);
-
-    //bfsqueue.push(start);
-
-    // while (!bfsqueue.empty())
-    // {
-    //     temp = bfsqueue.front();
-    //     bfsqueue.pop();
-
-    //     cout<<"Poped: "<< temp.first <<", "<< temp.second <<endl;
-
-    //     if (temp.first == target.first && temp.second == target.second)
-    //     {
-    //         cout << "found at " << target.first <<", "<< target.second << endl;
-    //         break;
-    //     }
-
-    //     pair<unsigned, unsigned> pos;
-
-
-    //     for(int i=1; i<=n-1; i++)
-    //     {
-    //         for(int j=1; j<=n-1; j++)
-    //         {
-    //             if(!visited[i-1][j-1] && map[i][j] != '#')
-    //             {
-    //                 //pos = ({i,j)};
-    //                 bfsqueue.push(pair<unsigned,unsigned>({i,j}));
-    //                 visited[i-1][j-1] = true;
-    //             }
-    //         }
-    //     }
-
-
-
-    // }
-
-    //-----------//
-    //. *** *** .//
-    //-----------//
+    else
+    {
+        cout << min_moves_output << endl;
+    }
 
     return 0;
 }
