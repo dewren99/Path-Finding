@@ -1,3 +1,12 @@
+/*
+ * king.cpp
+ *
+ * Description: Outputs the minimum steps to reach the target or impossible if impossible to solve
+ *
+ *
+ * Author: Deniz Evrendilek
+ * Date:  22/MAR/2019
+ */
 #include "mapio.h"
 #include <iostream>
 #include <cstdio>
@@ -11,8 +20,9 @@ using namespace std;
 
 struct dist_map
 {
-    pair<unsigned, unsigned> pos;
-    int distance;
+    pair<unsigned, unsigned> pos;           // Position of the current block on chess board. Holds the values of x and y axis
+    pair<unsigned, unsigned> prev_step_pos; // Position of the previous block on chess board. Holds the values of x and y axis (used in king-moves.cpp & rook-moves.cpp)
+    int distance;                           // Distance from the starting position
     dist_map() : pos({0, 0}), distance(0) {}
     dist_map(pair<unsigned, unsigned> pos, int distance) : pos(pos), distance(distance) {}
 };

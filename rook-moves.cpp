@@ -1,4 +1,13 @@
-
+/*
+ * rook-moves.cpp
+ *
+ * Description: Outputs the sequence of minimum steps to reach the target or impossible if impossible to solve
+ *              Mostly same as king-moves.cpp with few extra condition tweaks
+ *
+ *
+ * Author: Deniz Evrendilek
+ * Date:  22/MAR/2019
+ */
 #include "mapio.h"
 #include <iostream>
 #include <cstdio>
@@ -24,7 +33,7 @@ struct dist_map
 
 int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pair<unsigned, unsigned> &target, const unsigned &n)
 {
-    // possible movements for rook. For example, if the Rook is at (2,2) then it can move to (2,2) + (-1,0) = (1,2) etc.
+    // Possible movements for rook. For example, if the Rook is at (2,2) then it can move to (2,2) + (-1,0) = (1,2) or (2,2) + (1,0) + (1,0) = (4,2) etc.
     int x_axis[4] = {-1, 0, 0, 1};
     int y_axis[4] = {0, -1, 1, 0};
 
@@ -52,7 +61,6 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
         }
     }
 
-
     queue<dist_map> bfs_queue;              // Creating the queue for BFS algo.
     bfs_queue.push(dist_map(start_pos, 0)); // Pushing the starting position
 
@@ -75,9 +83,9 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
                 {
                     if (arr[i][j].pos.first < n && arr[i][j].pos.second < n)
                     {
-                        int count=0; // Makes sure that we are not exceeding the bounds of the nxn table 
-                        int c = i; // We cant change the value of "i" or "j" directly. Otherwise, it will break the nested loop. So, we create a variable to hold the value of "i" or "j".
-                        while (c + 1 < n && count<n) // Bound check
+                        int count = 0;                 // Makes sure that we are not exceeding the bounds of the nxn table
+                        int c = i;                     // We cant change the value of "i" or "j" directly. Otherwise, it will break the nested loop. So, we create a variable to hold the value of "i" or "j".
+                        while (c + 1 < n && count < n) // Bound check
                         {
                             if (arr[i][j].distance == arr[c + 1][j].distance + 1)
                             {
@@ -88,8 +96,8 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
                             c++;
                         }
                         c = i;
-                        count=0;
-                        while (c - 1 >= 0 && count<n) // Bound check
+                        count = 0;
+                        while (c - 1 >= 0 && count < n) // Bound check
                         {
                             if (arr[i][j].distance == arr[c - 1][j].distance + 1)
                             {
@@ -99,9 +107,9 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
                             c--;
                             count++;
                         }
-                        count=0;
+                        count = 0;
                         c = j;
-                        while (c + 1 < n && count<n) // Bound check
+                        while (c + 1 < n && count < n) // Bound check
                         {
                             if (arr[i][j].distance == arr[i][c + 1].distance + 1)
                             {
@@ -111,9 +119,9 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
                             c++;
                             count++;
                         }
-                        count=0;
+                        count = 0;
                         c = j;
-                        while (c - 1 >= 0 && count<n) // Bound check
+                        while (c - 1 >= 0 && count < n) // Bound check
                         {
                             if (arr[i][j].distance == arr[i][c - 1].distance + 1)
                             {
@@ -160,29 +168,8 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
             }
             for (int i = temp.distance - 1; i >= 0; i--)
             {
-                cout << seq_of_min_moves[i].first << ", " << seq_of_min_moves[i].second << endl;
+                cout << seq_of_min_moves[i].first << ", " << seq_of_min_moves[i].second << endl; // Output the sequence of minimum steps
             }
-
-            // FOR DEBUGGING
-            // for (int i = 0; i < n; i++)
-            // {
-            //     cout << i << " ";
-            //     for (int j = 0; j < n; j++)
-            //     {
-            //         cout << "|" << arr[i][j].distance << "|  ";
-            //     }
-            //     cout << endl;
-            // }
-            // for (int i = 0; i < n; i++)
-            // {
-            //     cout << i << " ";
-            //     for (int j = 0; j < n; j++)
-            //     {
-            //         cout << "|" << arr[i][j].prev_step_pos.first << ", " << arr[i][j].prev_step_pos.second << "|  ";
-            //     }
-            //     cout << endl;
-            // }
-
             return temp.distance; // return the number of minimum steps
         }
 
@@ -195,7 +182,7 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
 
             while (x + x_axis[i] >= 0 && x + x_axis[i] < n && y + y_axis[i] >= 0 && y + y_axis[i] < n && !visited[x][y] && map[x][y] != '#') //This while loop makes sure that rook is not moving just one block at a time like king
             {                                                                                                                                //It checks if possible to move either horizontally or veritcally more than one block without jumping over obstacles
-                if (x == target.first && y == target.second) // If target coordinates found, dont update (x,y) any further and finish the while loop
+                if (x == target.first && y == target.second)                                                                                 // If target coordinates found, dont update (x,y) any further and finish the while loop
                 {
                     break;
                 }
@@ -204,7 +191,7 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
                 y += y_axis[i]; // update y axis
             }
 
-            if (x >= 0 && x < n && y >= 0 && y < n)// if x and y are valid intigers
+            if (x >= 0 && x < n && y >= 0 && y < n) // if x and y are valid intigers
             {
                 if (!visited[x][y] && map[x][y] != '#') // if (x,y) not visited and its not on obstacle on the "map"
                 {
@@ -274,8 +261,7 @@ int main()
     }
     else
     {
-        cout << min_moves_output << endl;
+        //cout << min_moves_output << endl;
     }
-
     return 0;
 }
