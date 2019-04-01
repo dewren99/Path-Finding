@@ -210,6 +210,7 @@ int min_moves(ChessMap &map, const pair<unsigned, unsigned> &start_pos, const pa
     return -1; // return -1 if impossible
 }
 
+
 int main()
 {
     //. input routine supplied in "mapio.h"
