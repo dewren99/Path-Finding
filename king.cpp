@@ -99,7 +99,7 @@ int main()
     //. *** modify this section *** .//
     //-------------------------------//
 
-    cout << map;
+    //cout << map;
 
     pair<unsigned, unsigned> start; // START POSITION!
 
@@ -119,11 +119,11 @@ int main()
                 target = pair<unsigned, unsigned>({i, j});
             }
         }
-        if (DEBUG)
-            cout << i << '[' << map[i] << ']' << endl;
+        // if (DEBUG)
+        //     cout << i << '[' << map[i] << ']' << endl;
     }
-    if (DEBUG)
-        cout << "The starting position is: " << start.first << ", " << start.second << endl;
+    // if (DEBUG)
+    //     cout << "The starting position is: " << start.first << ", " << start.second << endl;
 
     int min_moves_output = min_moves(map, start, target, n);
 
